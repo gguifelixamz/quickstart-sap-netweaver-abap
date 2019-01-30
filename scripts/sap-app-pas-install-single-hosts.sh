@@ -384,7 +384,7 @@ set_EFS() {
         #construct the EFS DNS name
         EFS_MP=""$EFS_MT".efs."$REGION".amazonaws.com:/ "
 
-        echo ""$EFS_MP"  "$SAPMNT"  nfs rw,soft,bg,timeo=3,intr 0 0"  >> $FSTAB_FILE
+        echo ""$EFS_MP"  "$SAPMNT"  nfs nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 0 0"  >> $FSTAB_FILE
         
         #try to mount /sapmnt 3 times 
         mount /sapmnt > /dev/null
@@ -431,12 +431,12 @@ set_s3_download() {
 #download the s/w
           
           #download the media from the S3 bucket provided
-          _S3_DL=$(aws s3 sync "s3://${S3_BUCKET}/${S3_BUCKET_KP}" "$SW_TARGET" 2>&1 >/dev/null | grep "download failed")
+          S3_DL=$(aws s3 sync "s3://${S3_BUCKET}/${S3_BUCKET_KP}" "$SW_TARGET" 2>&1 >/dev/null | grep "download failed")
 
           if [ -n "$S3_DL" ]
           then
                #download failed for some reason, try to download again
-               _S3_DL2=$(aws s3 sync "s3://${S3_BUCKET}/${S3_BUCKET_KP}" "$SW_TARGET" 2>&1 >/dev/null | grep "download failed")
+               S3_DL2=$(aws s3 sync "s3://${S3_BUCKET}/${S3_BUCKET_KP}" "$SW_TARGET" 2>&1 >/dev/null | grep "download failed")
         
               if [ -n "$S3_DL2" ]
               then
